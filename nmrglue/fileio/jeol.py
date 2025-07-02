@@ -95,12 +95,18 @@ def add_axis_to_udic(udic, dic, udim):
     udic : dict
         the updated universal dictionary
     """
+
+    # udim is opposite (1->0) for nD spectra (conventional nmrglue)
     axis_prefix = dimension_names(dic)[udim]
-    udic[udim]["sw"] = dic["parameters"][f"{axis_prefix}_sweep"]
-    udic[udim]["obs"] =  dic['parameters'][f'{axis_prefix}_freq'] / 1e6
-    udic[udim]["car"] = dic["parameters"][f"{axis_prefix}_offset"] * udic[udim]["obs"]
-    udic[udim]["label"] = dic["parameters"][f"{axis_prefix}_domain"]
-    udic[udim]["encoding"] = dic["header"]["data_axis_type"][udim]
+    ndim = dic["header"]["data_dimension_number"]
+    store_udim = ndim - (udim + 1)
+    # print(ndim, udim, axis_prefix, "Store as", store_udim)    # For check.
+
+    udic[store_udim]["sw"] = dic["parameters"][f"{axis_prefix}_sweep"]
+    udic[store_udim]["obs"] =  dic['parameters'][f'{axis_prefix}_freq'] / 1e6
+    udic[store_udim]["car"] = dic["parameters"][f"{axis_prefix}_offset"] * udic[store_udim]["obs"]
+    udic[store_udim]["label"] = dic["header"]["data_axis_titles"][udim]
+    udic[store_udim]["encoding"] = dic["header"]["data_axis_type"][udim]
 
     return udic
 
